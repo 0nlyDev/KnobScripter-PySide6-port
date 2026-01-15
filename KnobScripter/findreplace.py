@@ -7,15 +7,7 @@ adrianpueyo.com
 
 import nuke
 
-try:
-    if nuke.NUKE_VERSION_MAJOR < 11:
-        from PySide import QtCore, QtGui, QtGui as QtWidgets
-        from PySide.QtCore import Qt
-    else:
-        from PySide2 import QtWidgets, QtGui, QtCore
-        from PySide2.QtCore import Qt
-except ImportError:
-    from Qt import QtCore, QtGui, QtWidgets
+from KnobScripter.qt_utils import QtCore, QtGui, QtWidgets, Qt, text_document_find_flags
 
 
 class FindReplaceWidget(QtWidgets.QWidget):
@@ -105,10 +97,7 @@ class FindReplaceWidget(QtWidgets.QWidget):
         self.layout.addLayout(self.find_layout)
         self.layout.addLayout(self.replace_layout)
         self.layout.setSpacing(4)
-        if nuke.NUKE_VERSION_MAJOR >= 11:
-            self.layout.setMargin(2)
-        else:
-            self.layout.setContentsMargins(2, 2, 2, 2)
+        self.layout.setContentsMargins(2, 2, 2, 2)
         self.layout.addSpacing(4)
         self.layout.addWidget(line)
         self.setLayout(self.layout)
@@ -133,9 +122,7 @@ class FindReplaceWidget(QtWidgets.QWidget):
         cursor.beginEditBlock()
 
         # Use flags for case match
-        flags = QtGui.QTextDocument.FindFlags()
-        if match_case:
-            flags = flags | QtGui.QTextDocument.FindCaseSensitively
+        flags = text_document_find_flags(match_case=match_case, backwards=False)
 
         # Find next
         r = self.editor.find(find_str, flags)
@@ -163,10 +150,7 @@ class FindReplaceWidget(QtWidgets.QWidget):
         cursor.beginEditBlock()
 
         # Use flags for case match
-        flags = QtGui.QTextDocument.FindFlags()
-        flags = flags | QtGui.QTextDocument.FindBackward
-        if match_case:
-            flags = flags | QtGui.QTextDocument.FindCaseSensitively
+        flags = text_document_find_flags(match_case=match_case, backwards=True)
 
         # Find prev
         r = self.editor.find(find_str, flags)
@@ -194,8 +178,7 @@ class FindReplaceWidget(QtWidgets.QWidget):
         cursor.beginEditBlock()
 
         # Use flags for case match
-        flags = QtGui.QTextDocument.FindFlags()
-        flags = flags | QtGui.QTextDocument.FindCaseSensitively
+        flags = text_document_find_flags(match_case=True, backwards=False)
 
         if rep_all:
             cursor.movePosition(QtGui.QTextCursor.Start)
@@ -222,7 +205,7 @@ class FindReplaceWidget(QtWidgets.QWidget):
                     self.editor.find(find_str, flags)
             else:
                 cursor.insertText(rep_str)
-                self.editor.find(rep_str, flags | QtGui.QTextDocument.FindBackward)
+                self.editor.find(rep_str, text_document_find_flags(match_case=True, backwards=True))
 
         cursor.endEditBlock()
         self.replace_lineEdit.setFocus()
