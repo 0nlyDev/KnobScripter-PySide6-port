@@ -9,15 +9,7 @@ from collections import OrderedDict
 import nuke
 import os
 
-try:
-    if nuke.NUKE_VERSION_MAJOR < 11:
-        from PySide import QtCore, QtGui, QtGui as QtWidgets
-        from PySide.QtCore import Qt
-    else:
-        from PySide2 import QtWidgets, QtGui, QtCore
-        from PySide2.QtCore import Qt
-except ImportError:
-    from Qt import QtCore, QtGui, QtWidgets
+from KnobScripter.qt_utils import QtCore, QtGui, QtWidgets, Qt
 
 from KnobScripter import ksscripteditor, config
 
@@ -28,7 +20,7 @@ class GripWidget(QtWidgets.QFrame):
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(inner_widget)
-        layout.setMargin(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
         cursor = None
@@ -201,11 +193,14 @@ class ToggableGroup(QtWidgets.QFrame):
         self.setLayout(master_layout)
         self.setCollapsed(self.collapsed)
 
-        master_layout.setMargin(0)
-        self.content_layout.setMargin(0)
-        self.content_layout.setSizeConstraint(self.content_layout.SetNoConstraint)
+        master_layout.setContentsMargins(0, 0, 0, 0)
+        self.content_layout.setContentsMargins(0, 0, 0, 0)
+        if hasattr(QtWidgets.QLayout, "SetNoConstraint"):
+            self.content_layout.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
+        else:
+             self.content_layout.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetNoConstraint)
         self.setMinimumHeight(10)
-        self.top_clickable_layout.setMargin(0)
+        self.top_clickable_layout.setContentsMargins(0, 0, 0, 0)
 
     def setTitle(self, text=""):
         self.title_label.setText(text)
@@ -280,7 +275,7 @@ class RadioSelector(QtWidgets.QWidget):
         self.layout.addStretch(1)
 
         self.setLayout(self.layout)
-        self.layout.setMargin(0)
+        self.layout.setContentsMargins(0, 0, 0, 0)
 
     def button_clicked(self, button):
         self.radio_selected.emit(str(button.text()))

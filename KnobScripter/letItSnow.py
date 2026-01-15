@@ -4,7 +4,7 @@ info: A PySide2 widget that allows you to add snow to any other widget
 """
 import sys
 from random import randint
-from PySide2 import QtWidgets, QtCore, QtGui
+from KnobScripter.qt_utils import QtWidgets, QtCore, QtGui, Qt
 
 
 class Snowflake(QtWidgets.QGraphicsItem):
@@ -143,4 +143,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication()
     widget = LetItSnow()
     widget.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

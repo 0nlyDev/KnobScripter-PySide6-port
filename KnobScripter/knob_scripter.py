@@ -38,15 +38,7 @@ if os.name == "nt" and nuke.NUKE_VERSION_MAJOR < 13:
 
     os.symlink = symlink_ms
 
-try:
-    if nuke.NUKE_VERSION_MAJOR < 11:
-        from PySide import QtCore, QtGui, QtGui as QtWidgets
-        from PySide.QtCore import Qt
-    else:
-        from PySide2 import QtWidgets, QtGui, QtCore
-        from PySide2.QtCore import Qt
-except ImportError:
-    from Qt import QtCore, QtGui, QtWidgets
+from KnobScripter.qt_utils import QtCore, QtGui, QtWidgets, Qt
 
 PrefsPanel = ""
 SnippetEditPanel = ""
@@ -60,8 +52,8 @@ from KnobScripter import config, prefs, utils, dialogs, widgets, ksscripteditorm
 from KnobScripter import snippets, codegallery, script_output, findreplace, content
 
 # logging.basicConfig(level=logging.DEBUG)
-
-nuke.tprint('KnobScripter v{0}, built {1}.\n'
+# @Adrian: Feel free to remove my self-added credits when you provide a new version (thank you for hard work!)
+nuke.tprint('KnobScripter v{0}, built {1}. (Ported to Nuke 16/PySide6 by Kire Timov)\n'
             'Copyright (c) 2016-{2} Adrian Pueyo.'
             ' All Rights Reserved.'.format(__version__, __date__, __date__.split(" ")[-1]))
 # logging.debug('Initializing KnobScripter')
@@ -515,7 +507,7 @@ class KnobScripterWidget(QtWidgets.QDialog):
 
     @staticmethod
     def showInGithub():
-        open_url("https://github.com/adrianpueyo/KnobScripter")
+        open_url("https://github.com/0nlyDev/KnobScripter-PySide6-port")
 
     @staticmethod
     def showHelp():
@@ -621,11 +613,11 @@ class KnobScripterWidget(QtWidgets.QDialog):
             edited_knob_value = self.script_editor.toPlainText()
         except:
             try:
-                error_message = QtWidgets.QMessageBox.information(None, "", "Unable to find %s.%s" % (
-                    self.node.name(), dropdown_value))
+                message_text = "Unable to find %s.%s" % (self.node.name(), dropdown_value)
             except:
-                error_message = QtWidgets.QMessageBox.information(None, "",
-                                                                  "Unable to find the node's {}".format(dropdown_value))
+                message_text = "Unable to find the node's {}".format(dropdown_value)
+            error_message = QtWidgets.QMessageBox()
+            error_message.setText(message_text)
             # error_message.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             error_message.exec_()
             return
@@ -707,8 +699,8 @@ class KnobScripterWidget(QtWidgets.QDialog):
             #    obtained_knob_value = str(self.node[dropdown_value].value())
             self.knob = dropdown_value
         except:
-            error_message = QtWidgets.QMessageBox.information(None, "", "Unable to find %s.%s" % (
-                self.node.name(), dropdown_value))
+            error_message = QtWidgets.QMessageBox()
+            error_message.setText("Unable to find %s.%s" % (self.node.name(), dropdown_value))
             error_message.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             error_message.exec_()
             return
